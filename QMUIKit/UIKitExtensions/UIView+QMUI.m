@@ -39,58 +39,58 @@ QMUISynthesizeIdCopyProperty(qmui_frameDidChangeBlock, setQmui_frameDidChangeBlo
 QMUISynthesizeIdCopyProperty(qmui_tintColorDidChangeBlock, setQmui_tintColorDidChangeBlock)
 QMUISynthesizeIdCopyProperty(qmui_hitTestBlock, setQmui_hitTestBlock)
 
-+ (void)load {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        
-        OverrideImplementation([UIView class], @selector(pointInside:withEvent:), ^id(__unsafe_unretained Class originClass, SEL originCMD, IMP (^originalIMPProvider)(void)) {
-            return ^BOOL(UIControl *selfObject, CGPoint point, UIEvent *event) {
-                
-                if (!UIEdgeInsetsEqualToEdgeInsets(selfObject.qmui_outsideEdge, UIEdgeInsetsZero)) {
-                    CGRect rect = UIEdgeInsetsInsetRect(selfObject.bounds, selfObject.qmui_outsideEdge);
-                    BOOL result = CGRectContainsPoint(rect, point);
-                    return result;
-                }
-                
-                // call super
-                BOOL (*originSelectorIMP)(id, SEL, CGPoint, UIEvent *);
-                originSelectorIMP = (BOOL (*)(id, SEL, CGPoint, UIEvent *))originalIMPProvider();
-                BOOL result = originSelectorIMP(selfObject, originCMD, point, event);
-                return result;
-            };
-        });
-        
-        ExtendImplementationOfVoidMethodWithSingleArgument([UIView class], @selector(setTintColor:), UIColor *, ^(UIView *selfObject, UIColor *tintColor) {
-            selfObject.qmui_tintColorCustomized = !!tintColor;
-        });
-        
-        ExtendImplementationOfVoidMethodWithoutArguments([UIView class], @selector(tintColorDidChange), ^(UIView *selfObject) {
-            if (selfObject.qmui_tintColorDidChangeBlock) {
-                selfObject.qmui_tintColorDidChangeBlock(selfObject);
-            }
-        });
-        
-        ExtendImplementationOfNonVoidMethodWithTwoArguments([UIView class], @selector(hitTest:withEvent:), CGPoint, UIEvent *, UIView *, ^UIView *(UIView *selfObject, CGPoint point, UIEvent *event, UIView *originReturnValue) {
-            if (selfObject.qmui_hitTestBlock) {
-                UIView *view = selfObject.qmui_hitTestBlock(point, event, originReturnValue);
-                return view;
-            }
-            return originReturnValue;
-        });
-        
-        // 这个私有方法在 view 被调用 becomeFirstResponder 并且处于 window 上时，才会被调用，所以比 becomeFirstResponder 更适合用来检测
-        ExtendImplementationOfVoidMethodWithSingleArgument([UIView class], NSSelectorFromString(@"_didChangeToFirstResponder:"), id, ^(UIView *selfObject, id firstArgv) {
-            if (selfObject == firstArgv && [selfObject conformsToProtocol:@protocol(UITextInput)]) {
-                // 像 QMUIModalPresentationViewController 那种以 window 的形式展示浮层，浮层里的输入框 becomeFirstResponder 的场景，[window makeKeyAndVisible] 被调用后，就会立即走到这里，但此时该 window 尚不是 keyWindow，所以这里延迟到下一个 runloop 里再去判断
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (IS_DEBUG && ![selfObject isKindOfClass:[UIWindow class]] && selfObject.window && !selfObject.window.keyWindow) {
-                        [selfObject QMUISymbolicUIViewBecomeFirstResponderWithoutKeyWindow];
-                    }
-                });
-            }
-        });
-    });
-}
+//+ (void)load {
+//    static dispatch_once_t onceToken;
+//    dispatch_once(&onceToken, ^{
+//        
+//        OverrideImplementation([UIView class], @selector(pointInside:withEvent:), ^id(__unsafe_unretained Class originClass, SEL originCMD, IMP (^originalIMPProvider)(void)) {
+//            return ^BOOL(UIControl *selfObject, CGPoint point, UIEvent *event) {
+//                
+//                if (!UIEdgeInsetsEqualToEdgeInsets(selfObject.qmui_outsideEdge, UIEdgeInsetsZero)) {
+//                    CGRect rect = UIEdgeInsetsInsetRect(selfObject.bounds, selfObject.qmui_outsideEdge);
+//                    BOOL result = CGRectContainsPoint(rect, point);
+//                    return result;
+//                }
+//                
+//                // call super
+//                BOOL (*originSelectorIMP)(id, SEL, CGPoint, UIEvent *);
+//                originSelectorIMP = (BOOL (*)(id, SEL, CGPoint, UIEvent *))originalIMPProvider();
+//                BOOL result = originSelectorIMP(selfObject, originCMD, point, event);
+//                return result;
+//            };
+//        });
+//        
+//        ExtendImplementationOfVoidMethodWithSingleArgument([UIView class], @selector(setTintColor:), UIColor *, ^(UIView *selfObject, UIColor *tintColor) {
+//            selfObject.qmui_tintColorCustomized = !!tintColor;
+//        });
+//        
+//        ExtendImplementationOfVoidMethodWithoutArguments([UIView class], @selector(tintColorDidChange), ^(UIView *selfObject) {
+//            if (selfObject.qmui_tintColorDidChangeBlock) {
+//                selfObject.qmui_tintColorDidChangeBlock(selfObject);
+//            }
+//        });
+//        
+//        ExtendImplementationOfNonVoidMethodWithTwoArguments([UIView class], @selector(hitTest:withEvent:), CGPoint, UIEvent *, UIView *, ^UIView *(UIView *selfObject, CGPoint point, UIEvent *event, UIView *originReturnValue) {
+//            if (selfObject.qmui_hitTestBlock) {
+//                UIView *view = selfObject.qmui_hitTestBlock(point, event, originReturnValue);
+//                return view;
+//            }
+//            return originReturnValue;
+//        });
+//        
+//        // 这个私有方法在 view 被调用 becomeFirstResponder 并且处于 window 上时，才会被调用，所以比 becomeFirstResponder 更适合用来检测
+//        ExtendImplementationOfVoidMethodWithSingleArgument([UIView class], NSSelectorFromString(@"_didChangeToFirstResponder:"), id, ^(UIView *selfObject, id firstArgv) {
+//            if (selfObject == firstArgv && [selfObject conformsToProtocol:@protocol(UITextInput)]) {
+//                // 像 QMUIModalPresentationViewController 那种以 window 的形式展示浮层，浮层里的输入框 becomeFirstResponder 的场景，[window makeKeyAndVisible] 被调用后，就会立即走到这里，但此时该 window 尚不是 keyWindow，所以这里延迟到下一个 runloop 里再去判断
+//                dispatch_async(dispatch_get_main_queue(), ^{
+//                    if (IS_DEBUG && ![selfObject isKindOfClass:[UIWindow class]] && selfObject.window && !selfObject.window.keyWindow) {
+//                        [selfObject QMUISymbolicUIViewBecomeFirstResponderWithoutKeyWindow];
+//                    }
+//                });
+//            }
+//        });
+//    });
+//}
 
 - (instancetype)qmui_initWithSize:(CGSize)size {
     return [self initWithFrame:CGRectMakeWithSize(size)];
