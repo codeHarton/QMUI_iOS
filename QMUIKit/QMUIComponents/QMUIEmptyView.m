@@ -125,8 +125,9 @@
     }
     
     if (!self.actionButton.hidden) {
-        [self.actionButton sizeToFit];
+        //[self.actionButton sizeToFit];
         self.actionButton.frame = CGRectSetXY(self.actionButton.frame, CGRectGetMinXHorizontallyCenterInParentRect(self.contentView.bounds, self.actionButton.frame) + self.actionButtonInsets.left - self.actionButtonInsets.right, originY + self.actionButtonInsets.top);
+        self.actionButton.frame = CGRectMake((self.contentView.qmui_width - 126) / 2, self.actionButton.frame.origin.y, 126, 46)
         originY = CGRectGetMaxY(self.actionButton.frame) + self.actionButtonInsets.bottom;
     }
 }
@@ -138,7 +139,7 @@
     CGFloat loadingViewHeight = CGRectGetHeight(self.loadingView.bounds) + UIEdgeInsetsGetVerticalValue(self.loadingViewInsets);
     CGFloat textLabelHeight = [self.textLabel sizeThatFits:CGSizeMake(resultWidth, CGFLOAT_MAX)].height + UIEdgeInsetsGetVerticalValue(self.textLabelInsets);
     CGFloat detailTextLabelHeight = [self.detailTextLabel sizeThatFits:CGSizeMake(resultWidth, CGFLOAT_MAX)].height + UIEdgeInsetsGetVerticalValue(self.detailTextLabelInsets);
-    CGFloat actionButtonHeight = [self.actionButton sizeThatFits:CGSizeMake(resultWidth, CGFLOAT_MAX)].height + UIEdgeInsetsGetVerticalValue(self.actionButtonInsets);
+    CGFloat actionButtonHeight = 46;//[self.actionButton sizeThatFits:CGSizeMake(resultWidth, CGFLOAT_MAX)].height + UIEdgeInsetsGetVerticalValue(self.actionButtonInsets);
     
     CGFloat resultHeight = 0;
     if (!self.imageView.hidden) {
