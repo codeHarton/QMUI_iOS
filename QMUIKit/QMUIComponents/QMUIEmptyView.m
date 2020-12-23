@@ -127,7 +127,7 @@
     if (!self.actionButton.hidden) {
         //[self.actionButton sizeToFit];
         self.actionButton.frame = CGRectSetXY(self.actionButton.frame, CGRectGetMinXHorizontallyCenterInParentRect(self.contentView.bounds, self.actionButton.frame) + self.actionButtonInsets.left - self.actionButtonInsets.right, originY + self.actionButtonInsets.top);
-        self.actionButton.frame = CGRectMake((self.contentView.qmui_width - 126) / 2, self.actionButton.frame.origin.y, 126, 46)
+        self.actionButton.frame = CGRectMake((self.contentView.qmui_width - 126) / 2, self.actionButton.frame.origin.y, 126, 46);
         originY = CGRectGetMaxY(self.actionButton.frame) + self.actionButtonInsets.bottom;
     }
 }
